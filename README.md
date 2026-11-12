@@ -9,11 +9,9 @@
 ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly&logoColor=white)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
 
----
-
 ## 📌 Description
 
-Travaux pratiques du module **Reverse Engineering** 
+Travaux pratiques du module **Reverse Engineering**
 
 14 TP répartis sur trois terrains : binaires natifs Linux (statique), applications web côté client (JS/WASM/HTTP), et analyse mémoire/débogage live sur une VM Windows isolée.
 
