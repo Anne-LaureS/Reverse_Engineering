@@ -7,6 +7,7 @@
 ![Ghidra](<https://img.shields.io/badge/Ghidra-reverse%20engineering-CC3333>)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
 ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly&logoColor=white)
+[![Licence MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
 
 ---
 
