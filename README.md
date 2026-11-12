@@ -81,7 +81,3 @@ Chaque dossier de TP contient son énoncé, un rapport (`RAPPORT.md` ou équival
 | TP12         | Dump mémoire, secret masqué                      | [`Reverse_windows/tp12/RAPPORT.md`](Reverse_windows/tp12/RAPPORT.md)                           |
 | TP13         | Débogueur sur process actif                       | [`Reverse_windows/tp13/RAPPORT.md`](Reverse_windows/tp13/RAPPORT.md)                           |
 | TP14         | Buffer overflow — ret2win                         | [`Reverse_windows/tp14/RAPPORT.md`](Reverse_windows/tp14/RAPPORT.md)                           |
-
----
-
-<p align="center">Anne-Laure S. — Mastère Cybersécurité, IPSSI</p>
