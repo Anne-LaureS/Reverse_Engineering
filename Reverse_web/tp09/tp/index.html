@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Boutique démo — Paiement</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#f4f6fb;color:#1f2937;margin:0}
+    header{background:#7c3aed;color:#fff;padding:14px 20px;font-weight:600}
+    main{max-width:480px;margin:28px auto;padding:0 16px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px}
+    label{display:block;margin:10px 0 4px;font-size:.9em}
+    input{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:8px;box-sizing:border-box}
+    button{margin-top:16px;background:#7c3aed;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer}
+    .warn{background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:10px;font-size:.85em;margin-bottom:14px}
+  </style>
+</head>
+<body>
+  <header>Boutique démo — Paiement</header>
+  <main>
+    <div class="warn">
+      ⚠️ Page de <b>simulation pédagogique</b>. N'entrez jamais de vraies données.
+      Les champs sont pré-remplis avec des données factices. Rien ne sort de
+      votre machine (collecteur local uniquement).
+    </div>
+    <form class="card" id="pay" autocomplete="off">
+      <label>Nom sur la carte</label>
+      <input id="name" value="JEAN DEMO">
+      <label>Numéro de carte (factice)</label>
+      <input id="card" value="4000 0000 0000 0002">
+      <label>Expiration</label>
+      <input id="exp" value="12/29">
+      <label>CVV (factice)</label>
+      <input id="cvv" value="123">
+      <button type="submit">Payer 42,00 €</button>
+    </form>
+  </main>
+  <!-- Script "analytics" tiers : c'est l'echantillon a analyser. -->
+  <script src="analytics.js"></script>
+  <script src="checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Banque démo v2 — Virement</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#f4f6fb;color:#1f2937;margin:0}
+    header{background:#065f46;color:#fff;padding:14px 20px;font-weight:600}
+    main{max-width:520px;margin:28px auto;padding:0 16px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px}
+    label{display:block;margin:10px 0 4px;font-size:.9em}
+    input{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:8px;box-sizing:border-box}
+    button{margin-top:16px;background:#065f46;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer}
+    pre{background:#0b1020;color:#edf2fc;padding:12px;border-radius:8px;overflow:auto;margin-top:16px}
+  </style>
+</head>
+<body>
+  <header>Banque démo v2 — Virement (simulation)</header>
+  <main>
+    <div class="card">
+      <label>Bénéficiaire</label>
+      <input id="to" value="FR76-DEMO-0001">
+      <label>Montant (€)</label>
+      <input id="amount" type="number" value="10">
+      <button id="send">Envoyer le virement</button>
+      <pre id="out">—</pre>
+    </div>
+  </main>
+  <script type="module" src="signer.min.js"></script>
+</body>
+</html>

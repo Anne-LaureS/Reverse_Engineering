@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logiciel démo — Activation</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#f4f6fb;color:#1f2937;margin:0}
+    header{background:#0f766e;color:#fff;padding:14px 20px;font-weight:600}
+    main{max-width:480px;margin:28px auto;padding:0 16px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px}
+    input{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:8px;box-sizing:border-box}
+    button{margin-top:16px;background:#0f766e;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer}
+    #out{margin-top:16px;font-weight:600}
+    .ok{color:#15803d}.ko{color:#b91c1c}
+  </style>
+</head>
+<body>
+  <header>Logiciel démo — Activation de licence</header>
+  <main>
+    <div class="card">
+      <p>Entrez votre clé de licence :</p>
+      <input id="key" placeholder="clé de licence…">
+      <button id="check">Activer</button>
+      <div id="out">—</div>
+    </div>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
