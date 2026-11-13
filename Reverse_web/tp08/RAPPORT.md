@@ -1,4 +1,4 @@
-# TP08 — Travail individuel`/tp08/tp/` : rapport
+# TP08 — Travail individuel `/tp08/tp/` : rapport
 
 ## Aperçu
 
@@ -59,11 +59,10 @@ Vu dans Sources (`tp08/tp/signer.min.js`, pretty-print) :
 `base64`, `urllib` de la bibliothèque standard).
 
 ```
-$ python3 tp/forge.py FR76-DEMO-0001 42
-Cle deduite      : v2_s1gn_k3y_7c41e
-Statut HTTP      : 200
-Corps de reponse : {"flag": "TP08-TP-OK", "msg": "Virement accepté (simulation).", ...}
+python3 tp/forge.py FR76-DEMO-0001 42
 ```
+
+→ clé déduite `v2_s1gn_k3y_7c41e`, `Statut HTTP : 200`, `{"flag": "TP08-TP-OK", ...}`
 
 ![Exécution de forge.py : 200](captures/02-forge-ok.png)
 
