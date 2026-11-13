@@ -1,16 +1,16 @@
-# TP09 — Fiche d'IOC : `tp09/tp/analytics.js`
+# 🚨 TP09 — Fiche d'IOC : `tp09/tp/analytics.js`
 
-## Aperçu
+## 👀 Aperçu
 
 ![Aperçu de la page](captures/apercu.png)
 
-## Contexte
+## 📋 Contexte
 
 Échantillon analysé : `tp09/tp/analytics.js` (niveau 2, sans source map).
 Tout est **simulé et inerte** : page factice, collecteur local (`collector.log`,
 à côté de `serve.py`), aucune communication externe.
 
-## Méthode
+## 🧭 Méthode
 
 Désobfuscation automatique avec `webcrack` (`npm install -g webcrack` puis
 `webcrack analytics.js -o sortie/`), relue et vérifiée manuellement, plus une preuve côté serveur (envoi réel vers le collecteur local, puis décodage de la ligne écrite dans `collector.log`). `webcrack` a travaillé en **statique**, sans exécuter le script : les pièges anti-debug n'ont donc jamais pu se déclencher.
@@ -42,7 +42,7 @@ function _0x3e447c(data) {                // envoi
 // declenche sur "blur" de name/card/exp/cvv, et sur "submit" du formulaire #pay
 ```
 
-## 1. Endpoint d'exfiltration
+## 📡 1. Endpoint d'exfiltration
 
 `/api/tp09/collect`, sur `127.0.0.1:8000` (collecteur du laboratoire).
 
@@ -60,7 +60,7 @@ Confirmé depuis le navigateur, sur la page réelle (`/tp09/tp/`), carte complè
 
 ![Capture Network de l'envoi](captures/network-avec-envoi.png)
 
-## 2. Champs ciblés et déclencheur
+## 🎯 2. Champs ciblés et déclencheur
 
 Champs lus : `name`, `card`, `exp`, `cvv` (tableau `_0x50cf62`), via
 `document.getElementById(id).value`.
@@ -80,7 +80,7 @@ soumission du formulaire `#pay` — **mais** l'envoi n'a lieu que si
 - carte complète `4000 0000 0000 0002` (16 chiffres ≥ 15), sortie du champ →
   **une requête part** (même capture que le point 1 ci-dessus).
 
-## 3. Encodage de la charge, avec clé
+## 🔐 3. Encodage de la charge, avec clé
 
 Schéma : `base64( XOR( JSON.stringify(payload), 0x42 ) )`, où
 `payload = {t: <epoch ms>, page: <chemin>, data: {name, card, exp, cvv}}`.
@@ -99,7 +99,7 @@ def decode(b64_text):
     return json.loads(text)
 ```
 
-## 4. Charge décodée (dernière ligne de `collector.log`)
+## 🧩 4. Charge décodée (dernière ligne de `collector.log`)
 
 La requête envoyée depuis la page réelle (point 1 ci-dessus) a été
 journalisée dans `collector.log`, puis relue avec `decode.py` :
@@ -112,7 +112,7 @@ python3 tp09/tp/decode.py --last-log collector.log
 
 (Données entièrement factices, pré-remplies par la page de simulation.)
 
-## 5. Techniques d'obfuscation rencontrées, et comment chacune a été défaite
+## 🧶 5. Techniques d'obfuscation rencontrées, et comment chacune a été défaite
 
 | Technique                                                                                                | Ce qu'elle fait                                                                                                                                         | Comment elle a été défaite                                                                                                                          |
 | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -128,7 +128,7 @@ contourne avec l'icône « Deactivate breakpoints » puis `F8` :
 
 ![Piège anti-debug déclenché puis contourné](captures/anti-debug.png)
 
-## Réponse à la question de restitution
+## 💬 Réponse à la question de restitution
 
 Un script tiers compromis ne peut agir que s'il peut charger du code non
 prévu et parler à un serveur non prévu. Trois leviers, complémentaires :

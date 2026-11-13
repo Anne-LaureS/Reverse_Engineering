@@ -1,18 +1,18 @@
-# TP10 — Travail individuel `/tp10/tp/` : rapport
+# 🧩 TP10 — Travail individuel `/tp10/tp/` : rapport
 
-## Aperçu
+## 👀 Aperçu
 
 ![Aperçu de la page](captures/apercu.png)
 **Figure — Aperçu.** Page `/tp10/tp/`, « Logiciel démo — Activation de
 licence ».
 
-## Contexte
+## 📋 Contexte
 
 Module `tp10/tp/license.wasm` : compilé sans section `name`, non exposé dans
 `window`. Objectif : retrouver la clé de licence sans lire de clé en clair
 dans le module, et écrire un solveur Python.
 
-## Méthode
+## 🧭 Méthode
 
 ```
 sudo apt install -y wabt
@@ -23,7 +23,7 @@ Lecture seule, aucune exécution du code de licence à ce stade. Le fichier
 `license.wat` obtenu est ouvert dans l'éditeur ; les 4 captures ci-dessous en
 montrent les parties utiles, dans l'ordre où le code s'exécute.
 
-## 1. Où la clé saisie est écrite
+## 📍 1. Où la clé saisie est écrite
 
 ![wasm2wat : import et buffer](captures/wasm2wat-import-buffer.png)
 **Figure 1 — Début du fichier `.wat`.** L'import `env.seed` (ligne 4) et la
@@ -31,7 +31,7 @@ fonction exportée `buffer` (lignes 5-6, `func (;1;)`) : elle renvoie
 `i32.const 65568`. C'est l'adresse mémoire où le JavaScript écrit les
 caractères tapés dans le champ, avant d'appeler `check`.
 
-## 2. La règle du premier caractère
+## 🔢 2. La règle du premier caractère
 
 ![wasm2wat : vérification du premier octet](captures/wasm2wat-verif-octet0.png)
 **Figure 2 — Début de `check`.** Dans l'ordre : `i32.const 17 / i32.ne`
@@ -52,7 +52,7 @@ On part de `29`, puis on fait un XOR avec le code ASCII de chaque lettre de
 
 La règle du premier caractère est donc : `118 ^ cle[0] == 48`.
 
-## 3. La règle de la boucle (les 16 caractères suivants)
+## 🔁 3. La règle de la boucle (les 16 caractères suivants)
 
 Carte mémoire du module : la table occupe les adresses `65536` à `65552`
 (17 octets, `table[0]` à `table[16]`), l'entrée saisie occupe `65568` à
@@ -89,7 +89,7 @@ En généralisant à n'importe quelle position `k` (1 à 16) :
 table[k] == entrée[k] ^ (k + 19) ^ seed
 ```
 
-## 4. Inverser les deux règles
+## 🧮 4. Inverser les deux règles
 
 Propriété du XOR : si `a ^ b = c`, alors `a = b ^ c`. En appliquant ça aux
 deux règles des points 2 et 3 :
@@ -121,7 +121,7 @@ cle[1] = table[1] ^ (1+19) ^ seed  = 16 ^ 20 ^ 118      = 114  -> 'r'
 Les lettres `F`, `r` sont bien les deux premiers caractères du résultat
 final.
 
-## 5. Solveur Python
+## 🐍 5. Solveur Python
 
 [`tp/solve.py`](tp/solve.py) applique exactement ces deux formules, en
 boucle sur les 17 positions :
@@ -145,7 +145,7 @@ def solve():
 **Figure 5 — Exécution de `solve.py`.** `seed = 118`, longueur `17`, clé
 `Fr0nt13r3_JS_W4SM`.
 
-## 6. Validation
+## ✅ 6. Validation
 
 ```
 check("Fr0nt13r3_JS_W4SM") = 1   →  cle valide
@@ -159,7 +159,7 @@ check("0000000000000000")  = 0   →  contre-epreuve, cle fausse refusee
 **Figure 6 — Validation.** La clé `Fr0nt13r3_JS_W4SM` saisie sur
 `/tp10/tp/` donne « ✔ Licence valide ».
 
-## Réponse à la question de restitution
+## 💬 Réponse à la question de restitution
 
 Le module, la table et la fonction `seed` arrivent tous les trois dans le
 navigateur : rien n'empêche de les lire (comme ici) ou de patcher le module

@@ -1,17 +1,17 @@
-# TP08 — Travail individuel `/tp08/tp/` : rapport
+# ✍️ TP08 — Travail individuel `/tp08/tp/` : rapport
 
-## Aperçu
+## 👀 Aperçu
 
 ![Aperçu de la page](captures/apercu.png)
 
-## Contexte
+## 📋 Contexte
 
 Client `tp08/tp/signer.min.js` : signe chaque virement avant envoi. Minifié,
 sans source map. Clé, message signé, encodage et en-têtes diffèrent de la
 démonstration (`tp08/signer.min.js`). Objectif : écrire `forge.py`, qui
 obtient un `200` sans navigateur.
 
-## Méthode
+## 🧭 Méthode
 
 ```js
 const _k = ["MWU=", "N2M0", "M3lf", "bl9r", "czFn", "djJf"];
@@ -41,7 +41,7 @@ Vu dans Sources (`tp08/tp/signer.min.js`, pretty-print) :
 
 ![Code client lu dans Sources](captures/01-code-client.png)
 
-## 1. Éléments retrouvés
+## 🔑 1. Éléments retrouvés
 
 - **Clé** : tableau `_k` de 6 morceaux base64, inversé puis concaténé puis
   décodé (`atob`) → `v2_s1gn_k3y_7c41e`.
@@ -53,7 +53,7 @@ Vu dans Sources (`tp08/tp/signer.min.js`, pretty-print) :
 - **Fenêtre de validité** : ±30 s (imposée côté serveur, indépendante du
   client).
 
-## 2. Solveur — `forge.py`
+## 🛠️ 2. Solveur — `forge.py`
 
 [`tp/forge.py`](tp/forge.py), sans dépendance externe (`hmac`, `hashlib`,
 `base64`, `urllib` de la bibliothèque standard).
@@ -66,7 +66,7 @@ python3 tp/forge.py FR76-DEMO-0001 42
 
 ![Exécution de forge.py : 200](captures/02-forge-ok.png)
 
-## 3. Contre-épreuve
+## 🧪 3. Contre-épreuve
 
 Une requête avec une signature volontairement fausse, hors de `forge.py` :
 
@@ -82,7 +82,7 @@ parce qu'il la calcule correctement.
 
 ![Contre-épreuve : signature fausse rejetée](captures/03-forge-bad-sig.png)
 
-## Réponse à la question de restitution
+## 💬 Réponse à la question de restitution
 
 *Que protège une signature calculée par le client ?* Peu de chose : elle
 peut détecter une modification en transit par un tiers qui ne connaît pas la

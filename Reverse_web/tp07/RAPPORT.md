@@ -1,16 +1,16 @@
-# TP07 — Travail individuel `/tp07/tp/` : rapport
+# 🌐 TP07 — Travail individuel `/tp07/tp/` : rapport
 
-## Aperçu
+## 👀 Aperçu
 
 ![Aperçu de la page](captures/apercu.png)
 
-## Contexte
+## 📋 Contexte
 
 Application : « Portail fournisseurs » (`tp07/tp/`), minifiée, sans source map.
 Analyse statique du client (`app.min.js`), puis preuve par `curl` hors navigateur.
 Serveur local, `127.0.0.1:8000`, aucune communication externe.
 
-## Méthode
+## 🧭 Méthode
 
 ```js
 const BASE="/api/tp07/v2", PARTNER_TOKEN="pt_4d1f7a0c93e2b856";
@@ -27,7 +27,7 @@ Vu dans Sources (`tp07/tp/app.min.js`, pretty-print) :
 
 ![Code client lu dans Sources](captures/01-code-client.png)
 
-## 1. Endpoint interne non exposé par l'interface
+## 🚪 1. Endpoint interne non exposé par l'interface
 
 Aucun bouton n'appelle `/internal/export`. Le code ne l'atteint que via `window.__debugExport()`, accessible depuis la console du navigateur.
 
@@ -42,7 +42,7 @@ curl -i http://127.0.0.1:8000/api/tp07/v2/internal/export
 **Cause** : le serveur ne distingue pas une route « interne » d'une route publique ; il répond à toute requête correctement formée, sans vérifier qui l'appelle.
 **Correctif** : authentifier et autoriser cette route côté serveur, indépendamment de ce que l'interface affiche ou non.
 
-## 2. Secret codé en dur dans le client
+## 🔑 2. Secret codé en dur dans le client
 
 `PARTNER_TOKEN` est en clair dans `app.min.js`, utilisé pour l'en-tête `X-Partner-Token`.
 
@@ -69,7 +69,7 @@ curl -i http://127.0.0.1:8000/api/tp07/v2/invoices -H "X-Partner-Token: pt_4d1f7
 **Cause** : un secret envoyé au navigateur est lisible par quiconque ouvre les DevTools ; il n'y a alors plus de secret.
 **Correctif** : ne jamais placer de jeton d'authentification dans le code client. L'échange doit se faire côté serveur (session utilisateur, jeton émis après connexion, etc.).
 
-## 3. Contrôle d'accès délégué au client
+## 🎭 3. Contrôle d'accès délégué au client
 
 Le rôle vient de `localStorage.getItem("portal_role")`, modifiable par n'importe quel visiteur (Application → Local Storage, ou `localStorage.setItem("portal_role","admin")` en console), puis envoyé au serveur dans `X-User-Role`.
 
@@ -97,6 +97,6 @@ curl -i http://127.0.0.1:8000/api/tp07/v2/admin/settings -H "X-User-Role: admin"
 (`X-User-Role`), au lieu de la vérifier lui-même.
 **Correctif** : le rôle doit être déterminé et conservé côté serveur (session authentifiée), jamais accepté tel quel depuis un en-tête ou une valeur envoyée par le navigateur.
 
-## Réponse à la question de restitution
+## 💬 Réponse à la question de restitution
 
 *Où doit vivre un contrôle de sécurité ?* Toujours côté serveur. Cacher un bouton, une route ou un secret dans le client ne protège rien : tout ce que le navigateur reçoit est lisible et modifiable. Seule une vérification faite par le serveur, sur des informations qu'il contrôle lui-même (session, jeton signé, rôle stocké côté serveur), constitue un vrai contrôle d'accès.
