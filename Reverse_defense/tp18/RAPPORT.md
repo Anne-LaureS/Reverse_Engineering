@@ -10,7 +10,7 @@ avec la même charge, et `tp\securise.c` à compléter.
 
 ## 📋 Contexte
 
-Correction à la source du programme vulnérable des jours précédents, par deux changements ciblés dans `tp/securise.c` : lecture bornée (`fgets` au lieu de `scanf("%s", ...)`) et effacement du secret en mémoire (`memset`) avant la fin de la fonction. Vérification en rejouant le ret2win contre`vulnerable.exe` (marche) et`securise.exe` (ne marche plus).
+Correction à la source du programme vulnérable des jours précédents, par deux changements ciblés dans `tp/securise.c` : lecture bornée (`fgets` au lieu de `scanf("%s", ...)`) et effacement du secret en mémoire (`memset`) avant la fin de la fonction. Vérification en rejouant le ret2win contre `vulnerable.exe` (marche) et `securise.exe` (ne marche plus).
 
 ## 🧭 Méthode
 
@@ -132,9 +132,7 @@ identique à `securise.c`. Canari de pile actif
 (`___stack_chk_guard`/`___stack_chk_fail`), cohérent avec la compilation
 "AVEC protections" mentionnée dans l'en-tête du fichier source.
 
-**Point relevé en vérifiant l'assembleur (pas juste la source) :** dans le binaire compilé `securise.exe`, le `memset(secret, ...)` n'est exécuté que
-**si `fgets` a réussi** (`if (iVar2 != 0) { ...; memset(...); }`). Si`fgets` échoue (EOF, flux fermé), le secret n'est jamais effacé. Ce n'est pas un des deux TODO demandés par l'énoncé — `securise.exe` est fourni tel quel, pas recompilé par nous — mais c'est une limite réelle de cette correction, corrigée dans notre propre `tp/securise.c` (voir Bonus
-ci-dessous).
+**Point relevé en vérifiant l'assembleur (pas juste la source) :** dans le binaire compilé `securise.exe`, le `memset(secret, ...)` n'est exécuté que **si `fgets` a réussi** (`if (iVar2 != 0) { ...; memset(...); }`). Si `fgets` échoue (EOF, flux fermé), le secret n'est jamais effacé. Ce n'est pas un des deux TODO demandés par l'énoncé — `securise.exe` est fourni tel quel, pas recompilé par nous — mais c'est une limite réelle de cette correction, corrigée dans notre propre `tp/securise.c` (voir Bonus ci-dessous).
 
 ## ✅ 2. Vérification : même charge, deux résultats
 
@@ -168,10 +166,10 @@ n'est jamais atteint.
 
 En relisant `tp/securise.c` instruction par instruction (pas juste les deux TODO), deux points supplémentaires ont été corrigés :
 
-1. Le code ne testait **pas** la valeur de retour de `fgets` : en cas d'échec de lecture (EOF, flux fermé), `buf` restait non initialisé et était quand même passé à` strcspn`/`printf` — un bug réel, distinct des deux TODO mais réel.
+1. Le code ne testait **pas** la valeur de retour de `fgets` : en cas d'échec de lecture (EOF, flux fermé), `buf` restait non initialisé et était quand même passé à `strcspn`/`printf` — un bug réel, distinct des deux TODO mais réel.
 2. Suite à ça, le `memset(secret, ...)` ne s'exécutait que sur le chemin normal. Il s'exécute maintenant sur **tous** les chemins de sortie, corrigeant au passage une limite observée dans `securise.exe` lui-même (voir section 1).
 
-Ajout demandé par le bonus — **validation de longueur explicite** : si`fgets` n'a trouvé aucune fin de ligne alors que le tampon est totalement rempli, l'entrée dépassait `sizeof(buf)` et a été tronquée silencieusement. On le détecte, on vide le reste de la ligne dans `stdin` (pour ne pas polluer une lecture suivante), et on affiche un message d'erreur clair :
+Ajout demandé par le bonus — **validation de longueur explicite** : si `fgets` n'a trouvé aucune fin de ligne alors que le tampon est totalement rempli, l'entrée dépassait `sizeof(buf)` et a été tronquée silencieusement. On le détecte, on vide le reste de la ligne dans `stdin` (pour ne pas polluer une lecture suivante), et on affiche un message d'erreur clair :
 
 **Vérifié réellement** (pas juste en théorie) — l'énoncé précise que la
 compilation n'est pas requise pour ce TP (`vulnerable.exe`/`securise.exe`
@@ -181,7 +179,7 @@ qui l'implémente : `securise.c` compilé avec `gcc` (`w64devkit`, GCC
 16.2.0) via `gcc securise.c -o securise_test.exe`, sans erreur ni warning,
 puis exécuté avec une entrée de plus de 63 caractères :
 
-![Message ](captures/bonus-trop-long.png)
+![Message « entree trop longue » obtenu en exécutant le vrai binaire compilé](captures/bonus-trop-long.png)
 
 ```
 === Controle d'acces (simulation TP18 - durci) ===
@@ -229,7 +227,7 @@ rejetée plutôt que coupée en silence, et un état interne remis à zéro (`se
 
 ## 💬 Réponse à la question de restitution
 
-**Si vraiment forcé à n'en garder qu'un, je choisirais les protections (TP15).** Raison concrète, pas théorique : dans ce TP même, le `memset`conditionnel de `securise.exe` et l'absence de vérification du retour de`fgets` dans notre propre `securise.c` de départ nous ont échappé à la première lecture — il a fallu redescendre en assembleur pour les voir.
+**Si vraiment forcé à n'en garder qu'un, je choisirais les protections (TP15).** Raison concrète, pas théorique : dans ce TP même, le `memset` conditionnel de `securise.exe` et l'absence de vérification du retour de `fgets` dans notre propre `securise.c` de départ nous ont échappé à la première lecture — il a fallu redescendre en assembleur pour les voir.
 La revue de code humaine est faillible, y compris la nôtre, sur ce TP précis. Des protections actives (canari, ASLR, DEP) neutralisent l'exploitation d'une classe entière de bugs mémoire même quand on n'a pas vu le bug — elles couvrent l'angle mort que la relecture ne couvre pas.
 
 **Mais la bonne réponse est « les deux », pas substituables :** les protections ne corrigent rien — le bug reste présent, peut toujours planter le programme, et un bug d'une autre nature (logique, fuite d'information comme le secret lu en RAM ici) leur échappe entièrement, puisqu'elles ne protègent que contre certaines classes d'exploitation mémoire. Un code correct (TP18) retire le bug lui-même, à la racine, mais sans protections, un bug qui échappe quand même à la revue reste pleinement exploitable. Les protections sont un filet pour les bugs qu'on n'a pas vus ; le code correct retire le danger qu'on a vu. Les deux ensemble réduisent le risque bien plus que chacun seul — c'est pour ça qu'un choix forcé entre les deux est, par construction, un mauvais choix.
