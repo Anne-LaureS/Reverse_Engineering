@@ -13,7 +13,7 @@
 
 Travaux pratiques du module **Reverse Engineering**
 
-14 TP répartis sur trois terrains : binaires natifs Linux (statique), applications web côté client (JS/WASM/HTTP), et analyse mémoire/débogage live sur une VM Windows isolée.
+15 TP répartis sur quatre terrains : binaires natifs Linux (statique), applications web côté client (JS/WASM/HTTP), analyse mémoire/débogage live sur une VM Windows isolée, et protections mémoire/anti-debug/code sécurisé sur cette même VM.
 
 ## 🎯 Objectifs
 
@@ -23,6 +23,9 @@ Travaux pratiques du module **Reverse Engineering**
 - ✅ Lire et **modifier** la mémoire d'un processus vivant (Cheat Engine, x64dbg)
 - ✅ Retrouver un secret dans un dump mémoire
 - ✅ Exploiter un débordement de tampon pour détourner l'exécution (ret2win)
+- ✅ Mesurer l'effet réel des protections mémoire (canari, ASLR, DEP) face au même exploit
+- ✅ Identifier et neutraliser des contrôles anti-debug enchaînés (PEB, API Windows) tout en restant attaché au débogueur
+- ✅ Corriger une vulnérabilité à la source et vérifier le résultat par comparaison binaire
 
 ## 📁 Structure du dépôt
 
@@ -40,11 +43,17 @@ Reverse_Engineering/
 │   ├── tp09/                    # Obfuscation JS — skimmer simulé, fiche d'IOC
 │   └── tp10/                    # WebAssembly : clé de licence, frontière JS↔WASM
 │
-└── Reverse_windows/              # VM Windows isolée — analyse mémoire & débogage live (TP11–TP14)
-    ├── tp11/                     # Cheat Engine : extraction d'un secret en RAM
-    ├── tp12/                     # Dump mémoire (System Informer + HxD), secret XOR masqué
-    ├── tp13/                     # x64dbg attaché à un process actif, vérification XOR à clé glissante
-    └── tp14/                     # Buffer overflow 32 bits — ret2win (x32dbg + payload.py)
+├── Reverse_windows/               # VM Windows isolée — analyse mémoire & débogage live (TP11–TP14)
+│   ├── tp11/                      # Cheat Engine : extraction d'un secret en RAM
+│   ├── tp12/                      # Dump mémoire (System Informer + HxD), secret XOR masqué
+│   ├── tp13/                      # x64dbg attaché à un process actif, vérification XOR à clé glissante
+│   └── tp14/                      # Buffer overflow 32 bits — ret2win (x32dbg + payload.py)
+│
+└── Reverse_defense/               # Même VM Windows, suite (Jour 4) — protections, anti-debug, code sécurisé (TP15, TP16, TP18 — TP17 à venir)
+    ├── outils/                    # motif.py + payload.py : refabriquer une charge ret2win pour TP15/TP18
+    ├── tp15/                      # Effet réel des protections (ASLR, canari, DEP) face au ret2win du Jour 3
+    ├── tp16/                      # Anti-debug enchaîné (PEB + CheckRemoteDebuggerPresent), patch x64dbg
+    └── tp18/                      # Code source sécurisé (lecture bornée, effacement du secret, validation de longueur)
 ```
 
 Chaque dossier de TP contient son énoncé, un rapport (`RAPPORT.md` ou équivalent) avec captures d'écran à l'appui, et les scripts/preuves produits (`.py`, `curl`, etc.).
@@ -55,12 +64,12 @@ Chaque dossier de TP contient son énoncé, un rapport (`RAPPORT.md` ou équival
 | ----------------------- | ------------------------------------------------------------------------------- |
 | Binaires natifs (Linux) | Ghidra, GDB, `objdump`, `strings`, `file`                                 |
 | Web côté client       | DevTools (Network/Sources), `curl`, `webcrack`, `wasm2wat`                |
-| Windows (VM isolée)    | Cheat Engine, System Informer, HxD, x64dbg/x32dbg, Ghidra                       |
+| Windows (VM isolée)    | Cheat Engine, System Informer, HxD, x64dbg/x32dbg, Ghidra, ScyllaHide                       |
 | Scripts de preuve       | Python 3 (stdlib uniquement : `hmac`, `hashlib`, `struct`, `base64`...) |
 
 ## ⚠️ Précautions
 
-- Les TP11–TP14 se déroulent dans une **VM Windows isolée, sans réseau sortant** une fois les outils installés — les cibles manipulées (débordement de tampon, process patché en mémoire) ne doivent jamais tourner sur une machine connectée.
+- Les TP11–TP16 et TP18 se déroulent dans une **VM Windows isolée, sans réseau sortant** une fois les outils installés — les cibles manipulées (débordement de tampon, process patché en mémoire, anti-debug neutralisé) ne doivent jamais tourner sur une machine connectée.
 - Toutes les cibles (binaires, pages web, scripts serveur) sont **fournies par le formateur dans un cadre pédagogique**, simulées et inertes — aucune donnée réelle, aucune communication externe.
 
 ## 📚 Détail des TP
@@ -79,3 +88,6 @@ Chaque dossier de TP contient son énoncé, un rapport (`RAPPORT.md` ou équival
 | TP12         | Dump mémoire, secret masqué                      | [`Reverse_windows/tp12/RAPPORT.md`](Reverse_windows/tp12/RAPPORT.md)                           |
 | TP13         | Débogueur sur process actif                       | [`Reverse_windows/tp13/RAPPORT.md`](Reverse_windows/tp13/RAPPORT.md)                           |
 | TP14         | Buffer overflow — ret2win                         | [`Reverse_windows/tp14/RAPPORT.md`](Reverse_windows/tp14/RAPPORT.md)                           |
+| TP15         | Protections mémoire (ASLR, canari, DEP) vs ret2win | [`Reverse_defense/tp15/RAPPORT.md`](Reverse_defense/tp15/RAPPORT.md)                           |
+| TP16         | Anti-debug enchaîné (PEB + CheckRemoteDebuggerPresent) | [`Reverse_defense/tp16/RAPPORT.md`](Reverse_defense/tp16/RAPPORT.md)                       |
+| TP18         | Code source sécurisé, vérifié par comparaison binaire | [`Reverse_defense/tp18/RAPPORT.md`](Reverse_defense/tp18/RAPPORT.md)                       |
