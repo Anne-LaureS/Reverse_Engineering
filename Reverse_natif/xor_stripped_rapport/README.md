@@ -1,15 +1,15 @@
-# Analyse du binaire `xor_stripped`
+# 🔐 Analyse du binaire `xor_stripped`
 
 Objectif : comprendre ce que fait le binaire et retrouver le mot de passe, d'abord avec les outils binutils, puis avec Ghidra. Le binaire est **strippé** : il n'a aucun nom de fonction.
 
-## Ce que fait le binaire
+## 📋 Ce que fait le binaire
 
 `xor_stripped` demande un mot de passe (`Password: `), lit une saisie (`%63s`) et affiche `Access granted` ou
 `Access denied`. Le mot de passe n'est pas stocké en clair : la saisie est transformée par un XOR dont la clé change à chaque caractère, puis comparée octet par octet à un tableau de 15 octets.
 
 **Mot de passe : `X0r_n0t_Crypt0!`**
 
-## 1. `file`
+## 🔍 1. `file`
 
 ```
 file xor_stripped
@@ -21,7 +21,7 @@ file xor_stripped
 
 ELF 64 bits PIE, marqué `stripped` : la table des symboles a été supprimée.
 
-## 2. `strings`
+## 🔤 2. `strings`
 
 ```
 strings -a -t x xor_stripped | grep -E 'Password|Access|%63s'
@@ -31,9 +31,9 @@ strings -a -t x xor_stripped | grep -E 'Password|Access|%63s'
 
 ![strings](captures/02-strings.png)
 
-On trouve les messages et le format `%63s`, mais **aucun mot de passe en clair** :`strings` ne suffit pas.
+On trouve les messages et le format `%63s`, mais **aucun mot de passe en clair** : `strings` ne suffit pas.
 
-## 3. `nm`
+## 🧩 3. `nm`
 
 ```
 nm xor_stripped
@@ -46,7 +46,7 @@ nm -D xor_stripped | grep ' U '
 
 Le premier `nm` répond « no symbols » : aucune fonction du programme n'a de nom. Les imports montrent `scanf`, `printf`, `puts` et `strlen`, mais **pas de `strcmp`** : le programme ne compare pas deux chaînes avec la libc, il fait la comparaison lui-même.
 
-## 4. `objdump`
+## ⚙️ 4. `objdump`
 
 ```
 objdump -d -M intel --no-show-raw-insn xor_stripped | grep -A 13 ' 115e:'
@@ -61,9 +61,9 @@ La boucle de `0x1170` à `0x1183` calcule `(i + 0x5a) XOR saisie[i]` (`lea edx,[
 
 Le tableau se lit avec `xxd -s 0x2038 -l 15 xor_stripped` : `02 6b 2e 02 30 6f 14 3e 21 11 1d 15 12 57 49`.
 
-## 5. Ghidra
+## 🐉 5. Ghidra
 
-### Retrouver `main`
+### 🎯 Retrouver `main`
 
 Dans Symbol Tree, ouvrir `entry` : le premier argument de `__libc_start_main` est l'adresse de `main`. Ici Ghidra l'affiche comme une étiquette, `&LAB_001010e0`, et non comme une fonction : il n'a pas reconnu `main` tout seul.
 
@@ -76,13 +76,13 @@ Il ne faut pas double-cliquer sur `__libc_start_main` : c'est une fonction de la
 
 Le décompilé confirme l'analyse : longueur de 15 (`0xf`), boucle sur les 15 caractères avec un XOR dont la clé dépend de l'indice, et comparaison avec un tableau en `.rodata`.
 
-### Lire le tableau
+### 📄 Lire le tableau
 
 Aller à `00102038` (touche `G`), sélectionner les 15 octets et les définir en `byte` (touche `B`).
 
 ![tableau](captures/06-ghidra-tableau.png)
 
-### Décoder avec un script
+### 🧮 Décoder avec un script
 
 Le XOR est sa propre inverse : `caractère[i] = tableau[i] XOR (0x5a + i)`.
 Script Manager, nouveau script Java `xor_stripped.java` (le nom de la classe doit être identique à celui du fichier) :
@@ -105,13 +105,13 @@ public class xor_stripped extends GhidraScript {
 
 ![console](captures/07-script-console.png)
 
-## 6. Validation par exécution
+## ✅ 6. Validation par exécution
 
 Après `chmod +x xor_stripped` :
 
 ![execution](captures/08-execution.png)
 
-## Conclusion
+## 🏁 Conclusion
 
 | Outil       | Apport                                                            |
 | ----------- | ----------------------------------------------------------------- |

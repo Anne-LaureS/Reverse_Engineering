@@ -1,15 +1,15 @@
-# Exercice exo2 : retrouver le code avec Ghidra
+# 🐉 Exercice exo2 : retrouver le code avec Ghidra
 
 Binaire analysé : `exo2` (ELF 64 bits PIE, x86-64, strippé).
 Objectif : trouver le code qui fait afficher « Bravo ! ».
 Outil utilisé : Ghidra 12.1.4 uniquement (analyse statique).
 
-## 1. Import et analyse
+## 📥 1. Import et analyse
 
 1. Créer un projet Ghidra, importer `exo2` (format ELF, x86-64 détecté automatiquement).
 2. Ouvrir le programme dans le CodeBrowser et lancer l'analyse avec les options par défaut.
 
-## 2. Trouver `main`
+## 🎯 2. Trouver `main`
 
 Le binaire est strippé : aucune fonction ne s'appelle `main`.
 
@@ -17,7 +17,7 @@ Le binaire est strippé : aucune fonction ne s'appelle `main`.
 2. Dans le décompilé, `entry` appelle `__libc_start_main`. Son **premier argument** est l'adresse de `main` : `FUN_001011c9`.
 3. Double-clic sur `FUN_001011c9`, puis `L` pour la renommer en `main`.
 
-## 3. Lire `main`
+## 📖 3. Lire `main`
 
 Le décompilé montre :
 
@@ -35,7 +35,7 @@ Le Listing confirme avec l'instruction `XOR EAX, 0x5a` suivie de `CMP EDX, EAX`.
 
 ![Décompilé de main](captures/01-main-decompile.png)
 
-## 4. Lire le tableau
+## 📄 4. Lire le tableau
 
 Double-clic sur `DAT_00102008` pour aller dans `.rodata`, puis définir 11 octets
 (clic droit, Data, byte). Valeurs relevées :
@@ -46,7 +46,7 @@ Double-clic sur `DAT_00102008` pour aller dans `.rodata`, puis définir 11 octet
 
 ![Tableau à 0x00102008](captures/02-tableau-00102008.png)
 
-## 5. Décoder avec un script Ghidra
+## 🧮 5. Décoder avec un script Ghidra
 
 Le XOR est sa propre inverse : `caractère = octet ^ 0x5a`.
 Script Manager, nouveau script Java `exo2.java` :
@@ -68,25 +68,21 @@ public class exo2 extends GhidraScript {
 ```
 
 Le nom de la classe doit être identique au nom du fichier.
-Exécution (triangle vert), résultat dans la console :
+Exécution (triangle vert) : la console affiche le code décodé `Ghidra_2026`.
 
-```
-exo2.java> Running...
-Ghidra_2026
-```
+![Console Ghidra : Ghidra_2026](captures/03-script-console.png)
 
-![Console Ghidra](captures/03-script-console.png)
-
-## 6. Validation
+## ✅ 6. Validation
 
 ```
 echo "Ghidra_2026" | ./exo2
-Code : Bravo !
 ```
 
-![Validation](captures/04-bravo.png)
+→ `Code : Bravo !`
 
-## Résultat
+![Validation : « Bravo ! »](captures/04-bravo.png)
+
+## 🏁 Résultat
 
 Code : **`Ghidra_2026`**
 

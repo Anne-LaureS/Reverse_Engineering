@@ -1,6 +1,6 @@
-# Analyse du binaire `suspicious`
+# 🕵️ Analyse du binaire `suspicious`
 
-## Ce que fait le binaire
+## 📋 Ce que fait le binaire
 
 `suspicious` imite la collecte d'informations d'une machine, sans rien envoyer. Il appelle `uname` pour lire le nom
 de la machine, le système et l'architecture, les écrit dans un fichier local `simulation.log`, puis affiche deux messages
@@ -8,7 +8,7 @@ de la machine, le système et l'architecture, les écrit dans un fichier local `
 
 L'analyse est d'abord **statique** (parties 1 à 4), puis le binaire est exécuté pour confirmer (partie 5). Les imports vérifiés plus haut montrent qu'il n'a aucune fonction réseau, ce qui rend l'exécution sans risque.
 
-## 1. `file`
+## 🔍 1. `file`
 
 ```
 file suspicious
@@ -20,7 +20,7 @@ file suspicious
 
 Binaire ELF 64 bits non strippé : les noms de fonctions sont conservés.
 
-## 2. `strings`
+## 🔤 2. `strings`
 
 ```
 strings -a -t x suspicious | grep -E 'uname|simulation|hostname|SIMULATION'
@@ -33,7 +33,7 @@ strings -a -t x suspicious | grep -E 'uname|simulation|hostname|SIMULATION'
 Le fichier de sortie `simulation.log`, les formats `hostname=%s`, `os=%s`, `architecture=%s` et les deux messages `[SIMULATION]`
 indiquent déjà l'intention. Le domaine `collector.example.invalid` est fictif : `.invalid` est réservé et ne peut jamais exister.
 
-## 3. `nm`
+## 🧩 3. `nm`
 
 ```
 nm -D suspicious | grep ' U '
@@ -46,7 +46,7 @@ nm -D suspicious | grep ' U '
 Fonctions importées : `uname`, `fopen`, `__fprintf_chk`, `fclose`, `puts`, `perror`. Il n'y a **aucune fonction réseau**
 (`socket`, `connect`, `send`...) : le programme ne peut pas envoyer de données hors de la machine.
 
-## 4. `objdump`
+## ⚙️ 4. `objdump`
 
 ```
 objdump -d -M intel --no-show-raw-insn suspicious | grep -A 60 '<main>:' | grep -E 'main>:|call'
@@ -58,7 +58,7 @@ objdump -d -M intel --no-show-raw-insn suspicious | grep -A 60 '<main>:' | grep 
 
 `main` appelle `uname`, puis `fopen("simulation.log", "w")`, `fprintf`, `fclose` et deux fois `puts` : lecture des informations système, écriture dans un fichier local, puis affichage des deux messages. Les `perror` ne servent qu'en cas d'erreur de `uname` ou de `fopen`.
 
-## 5. Exécution
+## ✅ 5. Exécution
 
 ```
 chmod +x suspicious
@@ -72,7 +72,7 @@ cat simulation.log
 
 Le résultat correspond à l'analyse statique : les deux messages `[SIMULATION]` sont affichés et `simulation.log` contient le nom de la machine, le système et l'architecture. Aucune connexion réseau n'est ouverte.
 
-## 6. Vérification dynamique avec `gdb`
+## 🐞 6. Vérification dynamique avec `gdb`
 
 ```
 gdb -q ./suspicious
@@ -89,7 +89,7 @@ bt
 
 Le programme s'arrête dans `fopen` appelé depuis `main`, avec les arguments `"simulation.log"` et `"w"` : il écrit dans un fichier local, ce qui confirme l'analyse statique. `quit` quitte `gdb`.
 
-## 7. Appels système avec `strace`
+## 📡 7. Appels système avec `strace`
 
 ```
 strace -e trace=uname,openat,write,connect,socket ./suspicious 2>&1 | grep -v -E 'ld.so|libc.so|locale'
@@ -111,7 +111,7 @@ strace -e trace=socket,connect python3 -c "import socket; s=socket.socket(); s.c
 
 Les lignes `socket` et `connect` apparaissent ici (l'erreur `ECONNREFUSED` signifie seulement que rien n'écoute sur ce port) : leur absence pour `suspicious` est donc bien significative.
 
-## Conclusion
+## 🏁 Conclusion
 
 | Outil       | Apport                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |

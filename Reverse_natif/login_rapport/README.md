@@ -1,6 +1,6 @@
-# Analyse du binaire `login_O0`
+# 🔑 Analyse du binaire `login_O0`
 
-## Ce que fait le binaire
+## 📋 Ce que fait le binaire
 
 `login_O0` est un programme de vérification de mot de passe : il affiche `Password: `, lit une saisie (`%63s`),
 la compare avec `strcmp` (fonction `check_password`) à un mot de passe codé en dur, puis affiche
@@ -8,7 +8,7 @@ la compare avec `strcmp` (fonction `check_password`) à un mot de passe codé en
 
 **Mot de passe : `Cyber2026!`**
 
-## 1. `file`
+## 🔍 1. `file`
 
 ```
 file login_O0
@@ -21,7 +21,7 @@ file login_O0
 Binaire ELF 64 bits, compilé avec les infos de débogage et non strippé : les noms de fonctions sont conservés,
 ce qui permet d'utiliser `nm` et `objdump`.
 
-## 2. `strings`
+## 🔤 2. `strings`
 
 ```
 strings -a -t x login_O0 | grep -E 'Cyber2026|Password|Access|%63s'
@@ -34,7 +34,7 @@ strings -a -t x login_O0 | grep -E 'Cyber2026|Password|Access|%63s'
 `Cyber2026!` (offset `0x2004`) n'est ni un message ni un format : c'est le candidat pour le mot de passe.
 `strings` ne prouve pas son rôle, `objdump` le confirme.
 
-## 3. `nm`
+## 🧩 3. `nm`
 
 ```
 nm login_O0
@@ -46,7 +46,7 @@ nm login_O0
 
 Deux fonctions de l'auteur, `main` et `check_password`, et un appel importé à `strcmp` : le programme compare deux chaînes.
 
-## 4. `objdump`
+## ⚙️ 4. `objdump`
 
 ```
 objdump -d -M intel --no-show-raw-insn login_O0 | grep -A 18 '<check_password>:'
@@ -69,7 +69,7 @@ Même commande, avec `grep -A 36` pour afficher `<main>:` et les 36 lignes suiva
 
 Selon le résultat de `check_password`, `main` affiche la chaîne `0x202e` (`Access denied`) ou `0x201f` (`Access granted`).
 
-## 5. Validation par exécution
+## ✅ 5. Validation par exécution
 
 Après `chmod +x login_O0` (ajoute le droit d'exécution) puis `./login_O0` (lance le programme) :
 
@@ -77,7 +77,7 @@ Après `chmod +x login_O0` (ajoute le droit d'exécution) puis `./login_O0` (lan
 
 ![Bon mot de passe](captures/08-execution-granted.png)
 
-## 6. Vérification avec Ghidra (facultatif)
+## 🐉 6. Vérification avec Ghidra (facultatif)
 
 Ghidra n'est pas un outil binutils, il confirme seulement les résultats précédents.
 
@@ -85,7 +85,7 @@ Ghidra n'est pas un outil binutils, il confirme seulement les résultats précé
 
 ![check_password dans le Listing](captures/06-ghidra-check-password.png)
 
-## Conclusion
+## 🏁 Conclusion
 
 | Outil | Apport |
 |---|---|
