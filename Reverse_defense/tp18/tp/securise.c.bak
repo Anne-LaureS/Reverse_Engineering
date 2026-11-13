@@ -1,0 +1,48 @@
+/*
+ * TP18 - version A DURCIR (fichier a completer).
+ *
+ * Reprenez vulnerable.c et corrigez les deux defauts en completant les TODO.
+ * Pas de reecriture complete : deux changements ciblés suffisent. La version
+ * corrigee, compilee AVEC protections (voir CONSIGNES), resiste au ret2win du
+ * Jour 3.
+ */
+#include <stdio.h>
+#include <string.h>
+
+void win(void)
+{
+    puts("");
+    puts(">>> Execution detournee vers win().");
+    puts(">>> Drapeau : TP18{code_a_durcir}");
+    fflush(stdout);
+}
+
+static void traiter(void)
+{
+    char secret[32];
+    char buf[64];
+
+    strcpy(secret, "cle-temporaire-en-clair");
+    printf("Entrez le code d'acces : ");
+    fflush(stdout);
+
+    /* TODO(1) : remplacer la lecture non bornee par une lecture BORNEE.
+       - Supprimez la ligne scanf ci-dessous.
+       - Activez (decommentez) le fgets, qui ne lit jamais plus que la taille
+         du tampon. */
+    fgets(buf, sizeof(buf), stdin);
+    buf[strcspn(buf, "\r\n")] = '\0';
+
+    printf("Code recu : %s\n", buf);
+
+    /* TODO(2) : effacer le secret de la memoire avant de quitter la fonction. */
+    memset(secret, 0, sizeof(secret));
+}
+
+int main(void)
+{
+    printf("=== Controle d'acces (simulation TP18 - durci) ===\n");
+    traiter();
+    printf("Fin normale du programme.\n");
+    return 0;
+}
