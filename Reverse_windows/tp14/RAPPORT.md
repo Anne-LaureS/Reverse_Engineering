@@ -1,4 +1,4 @@
-# TP14 — Travail individuel`tp14/tp/` : rapport
+# TP14 — Travail individuel `tp14/tp/` : rapport
 
 ## Aperçu
 
@@ -107,15 +107,7 @@ type payload.bin | .\acces.exe
 
 ![Drapeau obtenu via win()](captures/flag-win.png)
 
-```
-Code recu : AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH@
-
->>> Execution detournee vers win().
-
-Drapeau : TP14-TP{offset_a_trouver}
-```
-
-Drapeau obtenu : `TP14-TP{offset_a_trouver}`
+Drapeau obtenu : `TP14-TP{offset_a_trouver}` — l'exécution a bien été détournée vers `win()` (« >>> Execution detournee vers win(). »), preuve que l'adresse de retour a été remplacée par celle de `win()`.
 
 Un plantage se produit juste après (`win()` ne revient pas proprement — EIP
 part vers une zone invalide, `0x00410000`) : c'est normal et attendu, le
@@ -128,5 +120,5 @@ drapeau est déjà obtenu avant.
 Sur la pile, une **adresse de retour** et des **données** (le contenu d'un tampon) sont stockées côte à côte, sans frontière protégée entre les deux :
 rien n'empêche, par construction, que des octets « données » écrivent par-dessus des octets « adresse ». Détourner l'exécution sans injecter de code — juste en choisissant la bonne valeur à la bonne position — montre que la seule frontière qui existe est une **convention** (où le compilateur place les variables), pas une **protection**.
 
-Parmi les trois mesures du Jour 4, c'est le **canari de pile** (stack protector) qui suffirait seul à bloquer précisément ce ret2win : il place une valeur sentinelle entre les variables locales et l'adresse de retour, vérifiée juste avant que `vuln()` ne rende la main — la moindre corruption (comme notre motif cyclique ou notre payload) serait détectée et interromprait le programme **avant** que l'adresse de retour corrompue ne soit utilisée. DEP, en comparaison, ne changerait rien ici : on ne saute pas vers du code injecté sur la pile, mais vers `win()`, une fonction légitime déjà marquée exécutable. L'ASLR seul rendrait l'adresse de `win() `imprévisible d'un lancement à l'autre, ce qui gênerait la construction de la
+Parmi les trois mesures du Jour 4, c'est le **canari de pile** (stack protector) qui suffirait seul à bloquer précisément ce ret2win : il place une valeur sentinelle entre les variables locales et l'adresse de retour, vérifiée juste avant que `vuln()` ne rende la main — la moindre corruption (comme notre motif cyclique ou notre payload) serait détectée et interromprait le programme **avant** que l'adresse de retour corrompue ne soit utilisée. DEP, en comparaison, ne changerait rien ici : on ne saute pas vers du code injecté sur la pile, mais vers `win()`, une fonction légitime déjà marquée exécutable. L'ASLR seul rendrait l'adresse de `win()` imprévisible d'un lancement à l'autre, ce qui gênerait la construction de la
 charge utile, mais ne détecte pas la corruption elle-même — moins direct et moins garanti que le canari.

@@ -62,9 +62,9 @@ l'adresse trouvée dans Ghidra :
 
 Méthode : **inversion**. XOR étant réversible, `mot_de_passe[i] = table[i] ^ ((i - 0x1F) mod 256)` — calculable caractère par caractère sans avoir besoin de patcher le programme.
 
-Clé de transformation : `(i - 0x1F) mod 256`, glissante selon la position`i` du caractère (0 à 10).
+Clé de transformation : `(i - 0x1F) mod 256`, glissante selon la position `i` du caractère (0 à 10).
 
-**Calcul détaillé** (XOR est son propre inverse : si `a XOR b = c`, alors`a = b XOR c`) :
+**Calcul détaillé** (XOR est son propre inverse : si `a XOR b = c`, alors `a = b XOR c`) :
 
 ```
 caractère[i] = table[i] XOR ((i - 0x1F) mod 256)
@@ -104,7 +104,7 @@ Vérifié en relançant `portail.exe` via un terminal gardé ouvert (`cmd /c "..
 
 ## Bonus — contournement (patch)
 
-En plus de l'inversion, la seconde méthode (contournement) a été mise en pratique sur l'instruction de décision par caractère, à `portail.exe+15FB`(`JZ`, qui décide si le caractère courant est accepté) : patchée en `JMP`inconditionnel via l'assembleur intégré de x64dbg (Espace → `jmp 0x00007FF77B5D1604`, même adresse de destination que le `JZ` d'origine), pour que chaque caractère soit accepté sans vérification.
+En plus de l'inversion, la seconde méthode (contournement) a été mise en pratique sur l'instruction de décision par caractère, à `portail.exe+15FB` (`JZ`, qui décide si le caractère courant est accepté) : patchée en `JMP` inconditionnel via l'assembleur intégré de x64dbg (Espace → `jmp 0x00007FF77B5D1604`, même adresse de destination que le `JZ` d'origine), pour que chaque caractère soit accepté sans vérification.
 
 ![Instruction patchée : JZ devenu JMP](captures/bonus-patch-jmp.png)
 

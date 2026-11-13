@@ -1,4 +1,4 @@
-# TP11 — Travail individuel`tp11/tp/` : rapport
+# TP11 — Travail individuel `tp11/tp/` : rapport
 
 ## Aperçu
 
@@ -57,10 +57,10 @@ Retour au scan, *Scan Type* = **Changed value**, **Next Scan** :
 
 ![Next scan « Changed value » : un seul résultat](captures/bonus-changed-value.png)
 
-**Un seul résultat** : `gestionnaire.exe+C048` (= `0x7FF351BC048`), avec`First = 2D59454B` (valeur d'origine, octets `4B 45 59 2D` lus en little endian) et `Value/Previous = 2D59455A` (après modification, `5A 45 59 2D`).
+**Un seul résultat** : `gestionnaire.exe+C048` (= `0x7FF351BC048`), avec `First = 2D59454B` (valeur d'origine, octets `4B 45 59 2D` lus en little endian) et `Value/Previous = 2D59455A` (après modification, `5A 45 59 2D`).
 La technique « valeur inconnue au départ, puis filtrage sur ce qui a changé » retrouve exactement l'adresse modifiée, sans qu'il ait été nécessaire de connaître une valeur à chercher au départ.
 
-Ceci démontre aussi la deuxième partie du bonus : la mémoire d'un processus vivant n'est pas seulement **lisible** depuis l'extérieur, elle est aussi **modifiable** — Cheat Engine a bien écrit dans la mémoire de`gestionnaire.exe`, un processus qui n'est pourtant pas le sien.
+Ceci démontre aussi la deuxième partie du bonus : la mémoire d'un processus vivant n'est pas seulement **lisible** depuis l'extérieur, elle est aussi **modifiable** — Cheat Engine a bien écrit dans la mémoire de `gestionnaire.exe`, un processus qui n'est pourtant pas le sien.
 
 ## Réponse à la question de restitution
 
