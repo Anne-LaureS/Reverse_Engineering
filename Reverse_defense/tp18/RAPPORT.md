@@ -23,14 +23,11 @@ Correction à la source du programme vulnérable des jours précédents, par deu
    ```
 
    Crash observé **sous x32dbg** (débogage JIT, interception automatique
-   de l'exception) :
+   de l'exception), `EIP = 41366441` :
    ![Crash intercepté par x32dbg, EIP = 41366441](captures/x32dbg-crash-eip.png)
-   `EIP = 41366441`, puis :
-   ```powershell
-   python motif.py find 0x41366441
-   ```
 
-   ![motif.py find confirme 108](captures/motif-find-108.png)
+   `motif.py find` sur cette valeur redonne le décalage :
+   ![python motif.py find 0x41366441 → 108](captures/motif-find-108.png)
    → **108**, re-mesuré nous-mêmes (pas seulement recopié depuis
    `outils/README.md`, qui donnait la même valeur en exemple).
 3. Fabriquer la charge (`outils/payload.py`, `OFFSET=108`, adresse de `win()`), l'envoyer aux deux binaires.
@@ -181,12 +178,7 @@ puis exécuté avec une entrée de plus de 63 caractères :
 
 ![Message « entree trop longue » obtenu en exécutant le vrai binaire compilé](captures/bonus-trop-long.png)
 
-```
-=== Controle d'acces (simulation TP18 - durci) ===
-Entrez le code d'acces : AAAAAAAA...AAAAAAAA
-Erreur : entree trop longue (63 caracteres max).
-Fin normale du programme.
-```
+Code de la fonction durcie :
 
 ```c
 static void traiter(void)
