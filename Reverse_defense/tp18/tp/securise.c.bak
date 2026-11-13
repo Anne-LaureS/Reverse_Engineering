@@ -36,7 +36,8 @@ static void traiter(void)
     printf("Code recu : %s\n", buf);
 
     /* TODO(2) : effacer le secret de la memoire avant de quitter la fonction. */
-    memset(secret, 0, sizeof(secret));
+    /* memset(secret, 0, sizeof(secret)); */     /* <<< A ACTIVER   */
+    (void)secret;
 }
 
 int main(void)
