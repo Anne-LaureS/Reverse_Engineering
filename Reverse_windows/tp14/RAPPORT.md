@@ -1,20 +1,20 @@
-# TP14 — Travail individuel `tp14/tp/` : rapport
+# 💥 TP14 — Travail individuel `tp14/tp/` : rapport
 
-## Aperçu
+## 👀 Aperçu
 
 ![Aperçu de la cible](captures/apercu.png)
 
 Fenêtre de `tp14\tp\acces.exe` : "Controle d'acces v2 (simulation TP14 -
 groupe)", en attente du code d'accès.
 
-## Contexte
+## 📋 Contexte
 
 Cible : `tp14/tp/acces.exe`, 32 bits, sans protections (pas de canari, ASLR
 ni DEP actifs). Objectif : exploiter un débordement de tampon sur la pile
 pour écraser l'adresse de retour et détourner l'exécution vers une fonction
 `win()` jamais appelée normalement (*ret2win*), sans injection de shellcode.
 
-## Méthode
+## 🧭 Méthode
 
 1. Ghidra, à froid : importer `acces.exe` (nouveau projet, *Import File*,
    analyse par défaut), lire `vuln()` et `win()` dans le décompilateur.
@@ -26,7 +26,7 @@ pour écraser l'adresse de retour et détourner l'exécution vers une fonction
    charge : `python payload.py > payload.bin`.
 4. Déclencher : `type payload.bin | .\acces.exe`.
 
-## 1. Fonction vulnérable et adresse de `win()` (Ghidra, à froid)
+## 🐉 1. Fonction vulnérable et adresse de `win()` (Ghidra, à froid)
 
 ![vuln() décompilée dans Ghidra](captures/ghidra-vuln.png)
 
@@ -74,7 +74,7 @@ décompilateur) :
 
 Adresse de `win()` : **`0x401648`**
 
-## 2. Décalage trouvé (x32dbg, motif cyclique)
+## 📏 2. Décalage trouvé (x32dbg, motif cyclique)
 
 Motif cyclique (`Aa0Aa1Aa2...`, 120 octets) généré et envoyé en entrée
 (`type probe.bin | .\acces.exe`), avec x32dbg configuré en **débogueur JIT**
@@ -98,7 +98,7 @@ l'alignement de la pile. Le décalage réel jusqu'à l'adresse de retour est
 donc `taille du tampon + taille des variables locales intermédiaires + EBP sauvegardé (+ alignement)`, ce qui ne correspond pas forcément à la taille du
 tampon seule.
 
-## 3. Exécution détournée et drapeau
+## 🏁 3. Exécution détournée et drapeau
 
 ```
 python payload.py > payload.bin
@@ -115,7 +115,7 @@ drapeau est déjà obtenu avant.
 
 ![Plantage après win(), normal](captures/crash-post-win.png)
 
-## Réponse à la question de restitution
+## 💬 Réponse à la question de restitution
 
 Sur la pile, une **adresse de retour** et des **données** (le contenu d'un tampon) sont stockées côte à côte, sans frontière protégée entre les deux :
 rien n'empêche, par construction, que des octets « données » écrivent par-dessus des octets « adresse ». Détourner l'exécution sans injecter de code — juste en choisissant la bonne valeur à la bonne position — montre que la seule frontière qui existe est une **convention** (où le compilateur place les variables), pas une **protection**.

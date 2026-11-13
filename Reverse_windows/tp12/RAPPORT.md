@@ -1,6 +1,6 @@
-# TP12 — Travail individuel `tp12/tp/` : rapport
+# 💾 TP12 — Travail individuel `tp12/tp/` : rapport
 
-## Aperçu
+## 👀 Aperçu
 
 ![Aperçu de la cible](captures/apercu.png)
 
@@ -13,14 +13,14 @@ Chemin du module confirmé dans System Informer (onglet Mémoire) :
 
 ![Chemin du module confirmé](captures/systeminformer-chemin-confirme.png)
 
-## Contexte
+## 📋 Contexte
 
 Cible : `tp12/tp/coffre.exe`. Objectif : prendre un instantané (*dump*) de la
 mémoire du processus avec System Informer, puis retrouver hors ligne un
 secret masqué dans ce dump — comme un analyste qui reçoit une image mémoire
 après coup, sans processus vivant à interroger.
 
-## Méthode
+## 🧭 Méthode
 
 1. Lancer `tp12\tp\coffre.exe`, laisser la fenêtre ouverte.
 2. System Informer → clic droit sur le processus → *Create dump file → Full*.
@@ -34,7 +34,7 @@ après coup, sans processus vivant à interroger.
 5. Compléter les deux trous de `tp/recompose.py` (octet de XOR, longueur du
    secret), puis lancer `python recompose.py <dump>`.
 
-## 1. Repérage dans le dump (HxD)
+## 🔍 1. Repérage dans le dump (HxD)
 
 Structure trouvée (`beg[8] | user[16] | secret[17] | end[8]`), à l'offset
 `0x14EB39` du dump :
@@ -52,7 +52,7 @@ Sélection confirmée (33 octets = identifiant + secret) :
 
 ![Sélection confirmée identifiant + secret](captures/memory-viewer-export-bin.png)
 
-## 2. Octet de XOR et longueur du secret
+## 🧮 2. Octet de XOR et longueur du secret
 
 Octet de XOR trouvé : `0x3C`
 
@@ -97,7 +97,7 @@ alors `clé = masqué ^ clair`. En XORant l'octet masqué observé à cette
 position avec l'octet clair attendu (`0x2D`), on obtient directement la clé
 de XOR, sans avoir à essayer toutes les valeurs possibles.
 
-## 3. Clé recomposée
+## 🔑 3. Clé recomposée
 
 ```
 python recompose.py coffre.exe_2026-11-12_11-50-32.dmp
@@ -107,7 +107,7 @@ python recompose.py coffre.exe_2026-11-12_11-50-32.dmp
 
 Clé recomposée : `BACKUP-KEY-5D2E8A`
 
-## Réponse à la question de restitution
+## 💬 Réponse à la question de restitution
 
 Entre un secret **lisible** et un secret **masqué** dans le dump : ça ne change rien sur le fond — dans les deux cas, le secret est entièrement présent dans la mémoire capturée, donc entièrement récupérable par qui a accès au dump. Le masquage (ici un simple XOR) ne retire aucune information, il **retarde** seulement la lecture directe : il faut un octet de référence ou un peu de tâtonnement pour l'inverser, mais rien de plus. Pour un
 analyste, la différence est donc une question de **temps d'analyse**, pas de possibilité d'accès : un masquage réversible n'est pas un chiffrement avec clé secrète protégée, c'est juste de l'obfuscation.
