@@ -4,7 +4,7 @@
 
 ![Lancement direct, hors débogueur](captures/sans-debogueur-ok.png)
 
-Lancement direct de `tp16/tp/protege.exe`, **hors débogueur** : les deux contrôles (PEB puis `CheckRemoteDebuggerPresent`) répondent "pas de débogueur", donc le programme imprime directement le drapeau`TP16-TP{peb_patched}` et attend `Entrée` (`pause_fin()`). C'est le comportement de référence, sans aucune neutralisation — l'enjeu du TP est d'obtenir ce même résultat **en restant attaché à x64dbg**.
+Lancement direct de `tp16/tp/protege.exe`, **hors débogueur** : les deux contrôles (PEB puis `CheckRemoteDebuggerPresent`) répondent "pas de débogueur", donc le programme imprime directement le drapeau `TP16-TP{peb_patched}` et attend `Entrée` (`pause_fin()`). C'est le comportement de référence, sans aucune neutralisation — l'enjeu du TP est d'obtenir ce même résultat **en restant attaché à x64dbg**.
 
 <!-- TODO capture restante : l'aperçu x64dbg (apercu.png) avec protege.exe
      ouvert et bloqué par l'anti-debug, perdu lors du remplacement du
@@ -95,9 +95,11 @@ en x64) puis déréférence `PEB+0x2` (`BeingDebugged`) :
 0x140001654: MOVZX EAX, byte ptr [RAX + 2]  ; -> PEB.BeingDebugged
 ```
 
-**Les deux contrôles sont bien enchaînés et le PEB court-circuite l'autre** : `debugger_detecte` n'appelle `CheckRemoteDebuggerPresent` (import `KERNEL32.DLL`, IAT référencée depuis `0x140001692`/appel à`0x140001699` — voir la vue Listing Ghidra ci-dessous) que **si**`peb_being_debugged()` a répondu `0` (pas de débogueur).
+**Les deux contrôles sont bien enchaînés et le PEB court-circuite l'autre** : `debugger_detecte` n'appelle `CheckRemoteDebuggerPresent` (import `KERNEL32.DLL`, IAT référencée depuis `0x140001692`, appel à `0x140001699` — voir la vue Listing Ghidra ci-dessous) que **si** `peb_being_debugged()` a répondu `0` (pas de débogueur).
 
-![IAT CheckRemoteDebuggerPresent référencée depuis debugger_detecte](captures/ghidra-checkremote.png) Si le PEB répond "débogué", la fonction retourne `1`immédiatement sans jamais appeler `CheckRemoteDebuggerPresent` — neutraliser uniquement ce second contrôle ne servirait donc à rien tant que le PEB signale un débogueur, exactement comme l'indique l'énoncé.
+![IAT CheckRemoteDebuggerPresent référencée depuis debugger_detecte](captures/ghidra-checkremote.png)
+
+Si le PEB répond "débogué", la fonction retourne `1` immédiatement sans jamais appeler `CheckRemoteDebuggerPresent` — neutraliser uniquement ce second contrôle ne servirait donc à rien tant que le PEB signale un débogueur, exactement comme l'indique l'énoncé.
 
 ## 🛠️ 2. Méthode de neutralisation
 
@@ -123,13 +125,9 @@ instruction `TEST EAX,EAX`). Deux approches testées :
 Capture prise avec les deux fenêtres visibles simultanément : x64dbg
 toujours attaché (process `protege.exe` PID 9576, patch `JMP` actif sur
 `protege.<base>+1711`, breakpoint encore marqué) **et** la console du
-programme affichant :
-
-```
-=== Logiciel protege v2 (simulation TP16 - groupe) ===
-Aucun debogueur. Traitement en cours...
->>> Drapeau : TP16-TP{peb_patched}
-```
+programme affichant le drapeau `TP16-TP{peb_patched}` — exactement les
+mêmes lignes « Aucun debogueur... » qu'au lancement hors débogueur, mais
+cette fois obtenues **sous** le débogueur.
 
 Le débogueur n'a jamais été détaché — seule la décision prise par `main`
 après l'appel à `debugger_detecte()` a été forcée.
@@ -158,7 +156,7 @@ fait pareil sans débogueur attaché (cf. `sans-debogueur-ok.png`).
 
 La vraie preuve : `protege_patched.exe` ouvert **dans x64dbg** (`File → Open`), exécuté sans poser aucun point d'arrêt ni modifier aucun registre — le patch gravé dans le fichier suffit à lui seul à toujours prendre la branche "Aucun debogueur", même sous débogueur.
 
-**Pourquoi patcher le fichier plutôt que la mémoire à chaque run :** un analyste qui doit rejouer souvent la même cible (tests répétés, séances de TP, démonstration) ne veut pas reposer le même patch (breakpoint + édition de registre/instruction) à chaque lancement. Patcher le fichier une fois rend la neutralisation permanente et reproductible, au prix de garder une copie de l'original pour revenir en arrière si besoin (ici`protege.orig.exe`).
+**Pourquoi patcher le fichier plutôt que la mémoire à chaque run :** un analyste qui doit rejouer souvent la même cible (tests répétés, séances de TP, démonstration) ne veut pas reposer le même patch (breakpoint + édition de registre/instruction) à chaque lancement. Patcher le fichier une fois rend la neutralisation permanente et reproductible, au prix de garder une copie de l'original pour revenir en arrière si besoin (ici `protege.orig.exe`).
 
 ## 💬 Réponse à la question de restitution
 
